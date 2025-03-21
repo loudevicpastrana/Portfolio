@@ -5,3 +5,26 @@
 Passionate about optimizing power efficiency and developing robust firmware for mission-critical applications.
 
 📧 loudevicpastrana@gmail.com | [GitHub](https://github.com/loudevicpastrana/Portfolio) | [LinkedIn](https://www.linkedin.com/in/loudevic-pastrana-89714539/)
+
+## Skills
+- **Embedded Programming**: C, C++, Python
+- **Firmware Development**: FreeRTOS, uC/OS-II, Bare Metal
+- **Microcontrollers**: STM32, TI, 
+- **Power Optimization**: Low-power design, energy-efficient firmware
+- **Protocols**: UART, SPI, I2C, CAN, BLE, MQTT
+- **Debugging Tools**: JTAG, SWD, Logic Analyzers, Oscilloscope
+
+### **MP3 Player with Touchscreen GUI**
+- Designed an embedded MP3 player with **STM32** and a **custom GUI**.
+- Implemented **SD card file parsing** for song selection.
+- Debugged task conflicts between GUI and MP3 playback.
+- [GitHub Repo](https://github.com/loudevicpastrana/Portfolio/tree/main/Projects/MP3_Player)
+
+### **Senior Firmware Engineer - XP Power LLC** *(2020 - 2024)*
+- Led firmware development for **power supply controllers** in medical equipment.
+- Reduced power consumption by **20%** using **efficient sleep modes**.
+- Developed **fault diagnostic algorithms** for real-time system monitoring.
+
+## Certifications & Education
+- **Embedded & Real-Time Systems Programming** - University of Washington (2024-2025)
+- **Bachelor's Degree in Computer Engineering** -  University of San Carlos 2011
