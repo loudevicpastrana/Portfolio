@@ -1,0 +1,29 @@
+# CMake generated files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+# Standard CMake build folder (may have other names)
+build/
+build_*/
+
+# Mac OS generated files
+.DS_Store
+
+# VSCode generated files
+.vscode/.cortex*
+.vscode/settings.json
+
+# IAR generated files
+Debug/
+settings/
+
+iot_cert*/
+*.zip
