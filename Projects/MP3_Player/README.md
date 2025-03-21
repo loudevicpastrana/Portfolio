@@ -12,3 +12,4 @@ Specify, design, implement and debug a multi-task (multi-threaded) embedded proj
 5. UI will also print on screen what song is being played
 
 
+![Image](https://github.com/user-attachments/assets/5aaa155f-a459-4c8d-a748-5fc81f9ff7eb)
