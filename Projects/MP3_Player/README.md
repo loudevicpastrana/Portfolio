@@ -11,5 +11,9 @@ Specify, design, implement and debug a multi-task (multi-threaded) embedded proj
 4. Used queue for inter task synchronization/communication
 5. UI will also print on screen what song is being played
 
-
+## BLOCK DIAGRAM
 ![Image](https://github.com/user-attachments/assets/5aaa155f-a459-4c8d-a748-5fc81f9ff7eb)
+
+
+## ARCHITECTURAL DESIGN
+![Image](https://github.com/user-attachments/assets/f4ce0400-c710-4a18-98cf-9bc4c1edc62c)
