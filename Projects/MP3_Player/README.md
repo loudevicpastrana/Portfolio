@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## Objective
 
 Specify, design, implement and debug a multi-task (multi-threaded) embedded project using a real-time operating system.
@@ -13,8 +12,3 @@ Specify, design, implement and debug a multi-task (multi-threaded) embedded proj
 5. UI will also print on screen what song is being played
 
 
-
-
-=======
-# Portfolio
->>>>>>> dc028167bcf5c68f8c63cd0fc075219fb45c78eb
