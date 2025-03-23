@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "STM L475E: Run and Debug",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "device": "STM32L475VG",
+            "runToEntryPoint": "main",
+            "executable": "${workspaceFolder}/build/App/crash_dump_test.elf",
+            "svdFile": "${workspaceFolder}/.vscode/STM32L4x5.svd",
+            "cwd": "${workspaceRoot}",
+            "rtos": "auto",
+            "configFiles": [
+                "board/stm32l4discovery.cfg"
+            ]
+        },
+        {
+            "name": "STM L475E: Attach",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "openocd",
+            "device": "STM32L475VG",
+            "executable": "${workspaceFolder}/build/App/crash_dump_test.elf",
+            "svdFile": "${workspaceFolder}/.vscode/STM32L4x5.svd",
+            "cwd": "${workspaceRoot}",
+            "rtos": "auto",
+            "configFiles": [
+                "board/stm32l4discovery.cfg"
+            ]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "device.host",
+            "type": "promptString",
+            "default": "localhost:3333",
+            "description": "The local hostname with port for GDB to connect to"
+        }
+    ]
+}
