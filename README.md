@@ -20,6 +20,12 @@ Passionate about optimizing power efficiency and developing robust firmware for 
 - Debugged task conflicts between GUI and MP3 playback.
 - [GitHub Repo](https://github.com/loudevicpastrana/Portfolio/tree/main/Projects/MP3_Player)
 
+### **Temperature Monitoring System**
+- Designed an embedded temperature monitoring system with **STM32** and **HS212 sensor**.
+- Used I2C to communicate with the sensor.
+- Used Uart to boradcast temperature reading through tera term
+- [GitHub Repo](https://github.com/loudevicpastrana/Portfolio/tree/main/Projects/Temperature_Monitoring)
+
 ### **Senior Firmware Engineer - XP Power LLC** *(2020 - 2024)*
 - Led firmware development for **power supply controllers** in medical equipment.
 - Reduced power consumption by **20%** using **efficient sleep modes**.
