@@ -25,6 +25,14 @@ Passionate about optimizing power efficiency and developing robust firmware for 
 - Used I2C to communicate with the sensor.
 - Used Uart to boradcast temperature reading through tera term
 - [GitHub Repo](https://github.com/loudevicpastrana/Portfolio/tree/main/Projects/Temperature_Monitoring)
+- [Demo](https://www.youtube.com/watch?v=YFzxZffLFJ8)
+
+### **Crash Dump Handler**
+- Designed an embedded Crash Handler **STM32**.
+- During Hard fault it will save the different registers for debugging
+- Can be improved to transmit the saved registered to cloud
+- [GitHub Repo](https://github.com/loudevicpastrana/Portfolio/tree/main/Projects/Crash_Dump_Handler)
+- [Demo](https://youtu.be/SBPmsRF3hOM)
 
 ### **Senior Firmware Engineer - XP Power LLC** *(2020 - 2024)*
 - Led firmware development for **power supply controllers** in medical equipment.
