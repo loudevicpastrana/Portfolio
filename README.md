@@ -34,6 +34,11 @@ Passionate about optimizing power efficiency and developing robust firmware for 
 - [GitHub Repo](https://github.com/loudevicpastrana/Portfolio/tree/main/Projects/Crash_Dump_Handler)
 - [Demo](https://youtu.be/SBPmsRF3hOM)
 
+### **BLE**
+- Designed a BLE application on **STM32**.
+- I still need to integrate my temperature sensor to send the data to bluetooth
+- Right now, the application just sends raw data or hard coded data through bluetooth.
+
 ### **Senior Firmware Engineer - XP Power LLC** *(2020 - 2024)*
 - Led firmware development for **power supply controllers** in medical equipment.
 - Reduced power consumption by **20%** using **efficient sleep modes**.
