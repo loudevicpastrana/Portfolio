@@ -36,8 +36,9 @@ Passionate about optimizing power efficiency and developing robust firmware for 
 
 ### **BLE**
 - Designed a BLE application on **STM32**.
-- I still need to integrate my temperature sensor to send the data to bluetooth
-- Right now, the application just sends raw data or hard coded data through bluetooth.
+- Using HTS221 sensor for temperature reading.
+- Used I2C to communicate to the temperature sensor.
+- Sending temperature sensor reading through bluetooth.
 
 ### **Senior Firmware Engineer - XP Power LLC** *(2020 - 2024)*
 - Led firmware development for **power supply controllers** in medical equipment.
