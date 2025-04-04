@@ -30,6 +30,8 @@ BlueNRG_MS/App/app_bluenrg_ms.o: ../BlueNRG_MS/App/app_bluenrg_ms.c \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ramfunc.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h \
@@ -53,7 +55,7 @@ BlueNRG_MS/App/app_bluenrg_ms.o: ../BlueNRG_MS/App/app_bluenrg_ms.c \
  ../Middlewares/ST/BlueNRG-MS/includes/bluenrg_gatt_aci.h \
  ../Middlewares/ST/BlueNRG-MS/includes/bluenrg_gatt_server.h \
  ../Middlewares/ST/BlueNRG-MS/includes/bluenrg_hal_aci.h \
- ../Middlewares/ST/BlueNRG-MS/includes/sm.h
+ ../Middlewares/ST/BlueNRG-MS/includes/sm.h ../Core/Inc/ble_interface.h
 ../BlueNRG_MS/App/app_bluenrg_ms.h:
 ../Middlewares/ST/BlueNRG-MS/includes/hci.h:
 ../Middlewares/ST/BlueNRG-MS/includes/bluenrg_types.h:
@@ -86,6 +88,8 @@ BlueNRG_MS/App/app_bluenrg_ms.o: ../BlueNRG_MS/App/app_bluenrg_ms.c \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_flash_ramfunc.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c_ex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:
@@ -113,3 +117,4 @@ BlueNRG_MS/App/app_bluenrg_ms.o: ../BlueNRG_MS/App/app_bluenrg_ms.c \
 ../Middlewares/ST/BlueNRG-MS/includes/bluenrg_gatt_server.h:
 ../Middlewares/ST/BlueNRG-MS/includes/bluenrg_hal_aci.h:
 ../Middlewares/ST/BlueNRG-MS/includes/sm.h:
+../Core/Inc/ble_interface.h:

@@ -67,8 +67,8 @@ all: main-build
 main-build: BLE.elf secondary-outputs
 
 # Tool invocations
-BLE.elf BLE.map: $(OBJS) $(USER_OBJS) C:\EMBSYS310\BLE\STM32L475VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "BLE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\EMBSYS310\BLE\STM32L475VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="BLE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+BLE.elf BLE.map: $(OBJS) $(USER_OBJS) D:\Portfolio\Projects\BLE\STM32L475VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "BLE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\Portfolio\Projects\BLE\STM32L475VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="BLE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

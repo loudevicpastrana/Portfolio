@@ -51,6 +51,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c2;
 
 /* USER CODE BEGIN PV */
 
@@ -59,6 +60,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_I2C2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -71,71 +73,174 @@ static void MX_GPIO_Init(void);
 #define  CONN_INTERVAL_MIN_MS 100
 #define  CONN_INTERVAL_MAX_MS 300
 
+#define HTS221_ADDR_READ 0xBF
+#define HTS221_ADDR_WRITE 0xBE
+
+// HTS221 Registers
+#define HTS221_TEMP_OUT_L  0x2A   // Low byte of the temperature data
+#define HTS221_TEMP_OUT_H  0x2B   // High byte of the temperature data
+#define HTS221_T0_DEGC_X8  0x32   // T0 temperature calibration (x8)
+#define HTS221_T1_DEGC_X8  0x33   // T1 temperature calibration (x8)
+#define HTS221_T0_OUT_L    0x3C   // T0 output calibration (ADC value)
+#define HTS221_T0_OUT_H	   0x3D
+#define HTS221_T1_OUT_L    0x3E   // T1 output calibration (ADC value)
+#define HTS221_T1_OUT_H    0x3F
+
+#define HTS221_WHO_AM_I_REG  0x0F
+#define HTS221_CTRL_REG1     0x20
+#define HTS221_CTRL_REG2     0x21
+#define HTS221_CTRL_REG3     0x22
+
+int32_t ble_temperature = 0;
+
+// Function to read 16-bit data from HTS221 (I2C read)
+int16_t HTS221_Read16(uint8_t regL, uint8_t regH)
+{
+    uint8_t tempL;
+    uint8_t tempH;
+
+    HAL_I2C_Mem_Read(&hi2c2, HTS221_ADDR_READ, regL, I2C_MEMADD_SIZE_8BIT, &tempL, 1, HAL_MAX_DELAY);
+    HAL_I2C_Mem_Read(&hi2c2, HTS221_ADDR_READ, regH, I2C_MEMADD_SIZE_8BIT, &tempH, 1, HAL_MAX_DELAY);
+
+    uint16_t result = (tempH << 8) | tempL;
+
+    return result;  // Combine high and low byte
+}
+
+
+// Function to read 16-bit data from HTS221 (I2C read)
+int16_t HTS221_Read8(uint8_t reg)
+{
+    uint8_t data;
+
+
+    HAL_I2C_Mem_Read(&hi2c2, HTS221_ADDR_READ, reg, I2C_MEMADD_SIZE_8BIT, &data, 1, HAL_MAX_DELAY);
+
+
+    return data;  // Combine high and low byte
+}
+
+// Function to convert the raw ADC value to Celsius
+float HTS221_ConvertToCelsius(int16_t adc_value)
+{
+    // Read calibration values from HTS221
+    int16_t T0_OUT = HTS221_Read16(HTS221_T0_OUT_L, HTS221_T0_OUT_H);  // T0 ADC value
+    int16_t T1_OUT = HTS221_Read16(HTS221_T1_OUT_L, HTS221_T1_OUT_H);  // T1 ADC value
+    int16_t T0_degC = HTS221_Read8(HTS221_T0_DEGC_X8);  // T0 temperature (divided by 8)
+    int16_t T1_degC = HTS221_Read8(HTS221_T1_DEGC_X8);  // T1 temperature (divided by 8)
+
+
+    // Apply linear interpolation formula
+    float T_degC = T0_degC + ((adc_value - T0_OUT) * (T1_degC - T0_degC)) / (float)(T1_OUT - T0_OUT);
+    return T_degC;
+}
+
+void HTS221_Init(void)
+{
+	uint8_t data[2];
+
+	// Step 1: Check if the HTS221 device is present
+	HAL_I2C_Mem_Read(&hi2c2, HTS221_ADDR_READ, HTS221_WHO_AM_I_REG, I2C_MEMADD_SIZE_8BIT, data, 1, HAL_MAX_DELAY);
+	if (data[0] != 0xBC)  // Expected WHO_AM_I response for HTS221 is 0xBC
+	{
+		printf("HTS221 not found!\n");
+		return;
+	}
+
+	// Step 2: Configure CTRL_REG1 for operation
+	// Power ON, Block Data Update enabled, Output Data Rate 10 Hz
+	data[0] = 0x85;  // 0x85 = 0b10000101
+	// Bit breakdown: PD = 0 (Power On), BDU = 1 (Block Data Update), ODR = 01 (10 Hz)
+	HAL_I2C_Mem_Write(&hi2c2, HTS221_ADDR_WRITE, HTS221_CTRL_REG1, I2C_MEMADD_SIZE_8BIT, data, 1, HAL_MAX_DELAY);
+
+}
+
+void Read_Temperature(void)
+{
+
+	 char buffer[50];  // A buffer to hold the string representation of the variable
+
+    // Read raw temperature data (from TEMP_OUT_L and TEMP_OUT_H registers)
+    int16_t raw_temp = HTS221_Read16(HTS221_TEMP_OUT_L, HTS221_TEMP_OUT_H);  // Read raw temperature value
+
+    // Convert to Celsius using the conversion function
+    float temperature = HTS221_ConvertToCelsius(raw_temp);
+
+    ble_temperature = temperature * 100; // to transmit in a whole number on bluetooth
+
+    // Print the temperature to the debug console (via UART or other interface)
+    //printf("\r! temperature \r\n");temperature
+    snprintf(buffer, sizeof(buffer), "Value: %.2f\r\n", temperature);
+
+     HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+
+    //HAL_Delay(1000);
+}
+
+volatile uint32_t sysTickCount = 0;  // Global variable to track SysTick interrupts
+volatile uint32_t delayTime = 0;     // Variable used by SysTick_Handler to count down
+
+// SysTick timer initialization
+void SysTick_Init(void) {
+    // Set SysTick to interrupt every 1 ms
+    SysTick->LOAD = 4000 - 1;         // Set reload value for 1 ms (4000 clock cycles) default clock of systick is 4MHz
+    SysTick->VAL = 0;     // Clear current value register
+    SysTick->CTRL = SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;  // Enable SysTick interrupt and the timer
+}
+//// SysTick interrupt handler
+//void SysTick_Handler(void) {
+//    if (delayTime > 0) {
+//        delayTime--;
+//    }
+//    sysTickCount++;  // Increment SysTick counter
+//}
+
+// Delay function
+void delay(uint32_t ms) {
+    delayTime = ms;  // Set the number of SysTick interrupts to wait for
+    while (delayTime > 0) {
+        // Busy-wait until delayTime reaches 0
+    }
+}
+
+
 /* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
   * @retval int
   */
-
-
-// User event callback function
-void UserEvtRx(void* pData) {
-    if (pData == NULL) {
-
-        return;
-    }
-
-
-}
-
 int main(void)
 {
 
+  /* USER CODE BEGIN 1 */
 
+  /* USER CODE END 1 */
 
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
+  /* USER CODE BEGIN Init */
 
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
   SystemClock_Config();
 
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_I2C2_Init();
   MX_BlueNRG_MS_Init();
   /* USER CODE BEGIN 2 */
   MX_SPI3_Init(&hspi3);
-//  HCI_TL_SPI_Init(NULL);
-//  hci_tl_lowlevel_init();
-//
-//  hci_init(UserEvtRx, NULL);
-//
-//  HCI_TL_SPI_Reset();
-//
-//  status = hci_reset();
-//  HAL_Delay(100);
-//
-//
-//  ret = aci_gap_init_IDB04A1(0, &service_handle, &dev_name_char_handle, &appearance_char_handle);
-//
-//  ret = aci_gatt_init();
-//
-//  const char *name = "BlueNRG";
-//                 ret = aci_gatt_update_char_value(service_handle, dev_name_char_handle, 0, strlen(name), (uint8_t *)name);
-//                 if(ret){
-//                   PRINTF("aci_gatt_update_char_value failed.\n");
-//                 }
-//
-//  const char local_name[] = {AD_TYPE_COMPLETE_LOCAL_NAME,'B','l','u','e','N','R','G'};
-//
-//	ret = aci_gap_set_discoverable(ADV_IND, (ADV_INTERVAL_MIN_MS*1000)/625,
-//								(ADV_INTERVAL_MAX_MS*1000)/625,
-//							   STATIC_RANDOM_ADDR, NO_WHITE_LIST_USE,
-//								 sizeof(local_name), local_name,
-//								0, NULL,
-//								(CONN_INTERVAL_MIN_MS*1000)/1250,
-//								(CONN_INTERVAL_MAX_MS*1000)/1250);
-//
 
-
+  HTS221_Init();
 
 
 
@@ -146,8 +251,11 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+   Read_Temperature();
+   MX_BlueNRG_MS_Process();
+  // Read and convert the temperature
 
-  MX_BlueNRG_MS_Process();
+  // delay(500);  // Delay 500 milliseconds using systick interrupt
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -198,6 +306,54 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.Timing = 0x00100D14;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -212,6 +368,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */

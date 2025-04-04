@@ -34,6 +34,7 @@
 #include "bluenrg_gatt_aci.h"
 #include "bluenrg_hal_aci.h"
 #include "sm.h"
+#include "ble_interface.h"
 //#include "stm32l4xx_hal_tim.h"
 
 /* USER CODE BEGIN Includes */
@@ -250,8 +251,8 @@ static void User_Init(void)
  */
 static void User_Process(void)
 {
-  float data_t;
-  float data_p;
+  //float data_t;
+  //float data_p;
   static uint32_t counter = 0;
 
   if (set_connectable)
@@ -282,13 +283,12 @@ static void User_Process(void)
 
       /* Update emulated Environmental data */
       //Set_Random_Environmental_Values(&data_t, &data_p);
-      //BlueMS_Environmental_Update((int32_t)(data_p *100), (int16_t)(data_t * 10));
-      BlueMS_Environmental_Update(0x55555555, 0x22222222);
+      BlueMS_Environmental_Update((int32_t)(ble_temperature), (int16_t)(0 * 10));
 
       /* Update emulated Acceleration, Gyroscope and Sensor Fusion data */
-      //Set_Random_Motion_Values(counter);
-      //Acc_Update(&x_axes, &g_axes, &m_axes);
-      //Quat_Update(&q_axes);
+     // Set_Random_Motion_Values(counter);
+     // Acc_Update(&x_axes, &g_axes, &m_axes);
+     // Quat_Update(&q_axes);
 
       counter ++;
       if (counter == 40) {

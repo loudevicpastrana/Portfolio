@@ -1,5 +1,12 @@
-../Core/Src/main.c:83:6:UserEvtRx	1
-../Core/Src/main.c:92:5:main	1
-../Core/Src/main.c:160:6:SystemClock_Config	4
-../Core/Src/main.c:205:13:MX_GPIO_Init	1
-../Core/Src/main.c:262:6:Error_Handler	1
+../Core/Src/main.c:97:9:HTS221_Read16	1
+../Core/Src/main.c:112:9:HTS221_Read8	1
+../Core/Src/main.c:124:7:HTS221_ConvertToCelsius	1
+../Core/Src/main.c:138:6:HTS221_Init	2
+../Core/Src/main.c:158:6:Read_Temperature	1
+../Core/Src/main.c:184:6:SysTick_Init	1
+../Core/Src/main.c:199:6:delay	2
+../Core/Src/main.c:213:5:main	1
+../Core/Src/main.c:268:6:SystemClock_Config	4
+../Core/Src/main.c:313:13:MX_I2C2_Init	4
+../Core/Src/main.c:361:13:MX_GPIO_Init	1
+../Core/Src/main.c:419:6:Error_Handler	1
