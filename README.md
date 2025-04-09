@@ -11,7 +11,7 @@ Passionate about optimizing power efficiency and developing robust firmware for 
 - **Firmware Development**: FreeRTOS, uC/OS-II, Bare Metal
 - **Microcontrollers**: STM32, TI, 
 - **Power Optimization**: Low-power design, energy-efficient firmware
-- **Protocols**: UART, SPI, I2C, CAN, BLE, MQTT
+- **Protocols**: UART, SPI, I2C, CAN, BLE, MQTT, Wifi
 - **Debugging Tools**: JTAG, SWD, Logic Analyzers, Oscilloscope
 
 ### **MP3 Player with Touchscreen GUI**
