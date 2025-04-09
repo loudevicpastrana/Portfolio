@@ -18,6 +18,7 @@ Passionate about optimizing power efficiency and developing robust firmware for 
 - Designed an embedded MP3 player with **STM32** and a **custom GUI**.
 - Implemented **SD card file parsing** for song selection.
 - Debugged task conflicts between GUI and MP3 playback.
+- Used wifi and mqttx to send command to play, stop, next and previous commands
 - [GitHub Repo](https://github.com/loudevicpastrana/Portfolio/tree/main/Projects/MP3_Player)
 
 ### **Temperature Monitoring System**
