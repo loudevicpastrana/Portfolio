@@ -13,4 +13,6 @@ project(uw_rtos_project C CXX ASM)
 
 add_subdirectory(Drivers)   # Drivers: CMSIS, HAL, BSP, daughterboard (LCD, Touchscreen, Audio Interface)
 add_subdirectory(Middleware/Micrium/Software/uCOS-II)        # Middleware: uCOS-2
+add_subdirectory(Middleware/MQTTPacket)     #Middleware: Paho MQTT Embedded (Packet structures only).
+add_subdirectory(Middleware/CMSIS_OS_UCOS2)     #Middleware: CMSIS RTOSv1 (Mutex + Semaphore only).
 add_subdirectory(App)       # Application

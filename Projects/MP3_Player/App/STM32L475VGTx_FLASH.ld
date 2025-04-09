@@ -138,7 +138,7 @@ SECTIONS
 
     . = ALIGN(8);
     _edata = .;        /* define a global symbol at data end */
-  } >RAM AT> FLASH
+  } >RAM2 AT> FLASH
 
   
   /* Uninitialized data section */

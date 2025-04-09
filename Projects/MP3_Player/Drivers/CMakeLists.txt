@@ -139,6 +139,8 @@ add_subdirectory(./Adafruit/Adafruit_FT6206)    # Touch-screen
 add_subdirectory(./Arduino/SD)
 add_subdirectory(./Adafruit/Adafruit_VS1053)    # Audio Interface. Requires SD card.
 
+add_subdirectory(./BSP/Components/es_wifi)      # WiFi Driver, requires CMSIS_RTOS
+
 add_library(${TARGET}
     ${SOURCES}
 )

@@ -20,6 +20,13 @@ extern OS_EVENT *mp3CmdQueue;
 
 extern int currentSongIndex;
 
+extern void *p_msg;
+
+extern OS_FLAG_GRP *dataFlag; 
+#define FLAG_NEW_DATA 0x01  // Define a flag bit for new data
+
+extern OS_FLAGS flags_iot;
+
 #define MAX_FILES 5
 #define MAX_FILENAME_LENGTH 32 
 

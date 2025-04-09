@@ -96,6 +96,8 @@ void ErrorHandler()
 extern char _user_heap_base asm("_user_heap_base");
 extern char _user_heap_end asm("_user_heap_end");
 
+extern "C" int CheckCoreDump();
+
 int main() 
 {
   HAL_Init();

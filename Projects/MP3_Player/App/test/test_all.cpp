@@ -19,6 +19,7 @@ static OS_STK GuiTaskStk[APP_CFG_TASK_START_STK_SIZE];
 static OS_STK Mp3TaskStk[APP_CFG_TASK_START_STK_SIZE];
 
 static OS_STK StartupTaskStk[APP_CFG_TASK_START_STK_SIZE];
+static OS_STK IoTaskStk[APP_CFG_TASK_START_STK_SIZE];
 
 // Declare the SPI1 mutex:
 OS_EVENT *mutexSPI1 = 0;
@@ -60,6 +61,19 @@ void StartupTask(void* pdata)
                       &GuiTaskStk[0],APP_CFG_TASK_START_STK_SIZE,NULL,
                       0);
   
+  err = OSTaskCreateExt(IoTTask, 
+    (void*)0, 
+    &IoTaskStk[APP_CFG_TASK_START_STK_SIZE-1],
+    APP_TASK_IOT_PRIO,
+    0, 
+    &IoTaskStk[0],
+    APP_CFG_TASK_START_STK_SIZE,NULL,0);
+
+  if (err) 
+  {
+  log_error("IoT task creation failed: %d\n", err);
+  }
+                    
   
   // This task will become the MP3 Player task.
   OSTaskNameSet(APP_TASK_MP3_PRIO, (INT8U *)"MP3", &err);

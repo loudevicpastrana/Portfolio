@@ -26,6 +26,7 @@ static  void      *MessageStorage[MP3_QUEUE_SIZE];
 
 OS_ERR err;
 Mp3Command_t* cmd;
+void *p_msg;
 //OS_MSG_SIZE msg_size;
 
 int currentSongIndex = 1;   // Index of the current song
@@ -88,10 +89,10 @@ static void Mp3StreamFile(const char* fileName) {
 
     while (!stopRequested) {  // Loop should exit if stop is requested
         
-        void *p_msg = OSQAccept(mp3CmdQueue, &err);  // Accept a message from the queue
+        p_msg = OSQAccept(mp3CmdQueue, &err);  // Accept a message from the queue
         if (err == OS_ERR_NONE && p_msg != NULL) {
             cmd = (Mp3Command_t*) p_msg;
-            if (*cmd == MP3_CMD_STOP || *cmd == MP3_CMD_NEXT) {
+            if (*cmd == MP3_CMD_STOP || *cmd == MP3_CMD_NEXT || *cmd == MP3_CMD_PREV) {
                 stopRequested = true;  // Set flag to stop playback
                 break;  // Exit the loop and stop streaming
             }
@@ -195,7 +196,25 @@ void PlayNextSong() {
  
     currentSongIndex++;  // Move to next song
     if (currentSongIndex > fileCount) {
-        currentSongIndex = 0;  // Wrap around to the first song
+        currentSongIndex = 1;  // Wrap around to the first song
+    }
+
+    log_debug("Playing next song: %s", mp3Files[currentSongIndex]);
+    Mp3StreamFile(mp3Files[currentSongIndex]);
+}
+
+// Function to play the next song
+void PlayPreviousSong() {
+
+
+    if (fileCount == 0) {
+        log_error("No MP3 files found on SD card.");
+        return;
+    }
+ 
+    currentSongIndex--;  // Move to next song
+    if (currentSongIndex < 0) {
+        currentSongIndex = 1;  // Wrap around to the first song
     }
 
     log_debug("Playing next song: %s", mp3Files[currentSongIndex]);
@@ -205,7 +224,7 @@ void PlayNextSong() {
 void Mp3Task(void* pdata) {
     OS_ERR err;
     Mp3Command_t *cmd;
-    void *p_msg;
+    
     //CPU_INT16U msg_size;  // Declare msg_size to store the message size
 
     log_debug("MP3Task: starting\n");
@@ -262,12 +281,13 @@ void Mp3Task(void* pdata) {
                     Mp3StreamStop();
                     PlayNextSong();
                     break;
-                // case MP3_CMD_PREV:
-                //     PlayPreviousSong();
-                //     break;
+                case MP3_CMD_PREV:
+                     PlayPreviousSong();
+                     break;
                 default:
                     break;
             }
         }
+        OSTimeDly(10);
     }
 }

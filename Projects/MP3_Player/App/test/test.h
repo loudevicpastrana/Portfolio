@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 extern "C" int32_t test_debugger();
+extern "C" int32_t test_iot();
 int32_t test_rtos();
 int32_t test_sd();
 int32_t test_audiocard();

@@ -16,6 +16,9 @@ extern OS_EVENT *mutexSPI1;
 void StartupTask(void* pdata);
 void GuiTask(void* pdata);
 void Mp3Task(void* pdata);
+extern "C" void IoTTask(void* pdata);
+void MLTask(void* pdata);
+void PrintOSStat();
 
 inline void SPI1Lock()
 {

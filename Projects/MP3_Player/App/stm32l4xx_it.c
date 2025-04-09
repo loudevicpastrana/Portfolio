@@ -25,6 +25,7 @@
 
 #ifdef UCOS2
   #include "ucos_ii.h"
+  #include "es_wifi_conf.h"
 
   /* UW:  See Configuration/app_cfg.h for more details around CPU_CFG_KA_IPL_BOUNDARY:
    *      1. Interrupts with priority < CPU_CFG_KA_IPL_BOUNDARY MUST not use uCOS-2 features.
@@ -33,7 +34,25 @@
    *         implement proper uCOS-2 header/trailer as defined at 
    *         https://www.weston-embedded.com/company/media-articles/20-cortex-m-migrate-to-new-armv7m-port
    */
-  #define UCOS2_HANDLES_INT
+
+  #if 0
+  // uCOS ISR requirements for Kernel-Aware interrupts:
+
+  // Header:
+  #if OS_CRITICAL_METHOD == 3u                                    /* Allocate storage for CPU status register             */
+    OS_CPU_SR  cpu_sr;
+  #endif
+
+  OS_ENTER_CRITICAL();
+  OSIntEnter(); /* Tell OS that we are starting an ISR */
+  OS_EXIT_CRITICAL();
+
+  // Process ISR - uCOS2 Constructs _can_ be called here.
+  // ...
+
+  OSIntExit(); /* Tell OS that we are leaving the ISR */
+  #endif
+
 #endif
 
 /** @addtogroup STM32L4xx_HAL_Examples
@@ -65,7 +84,6 @@ void NMI_Handler(void)
 {
 }
 
-#if 1 // UW: replaced by assembly when the debugger is enabled.
 /**
   * @brief  This function handles Hard Fault exception.
   * @param  None
@@ -78,7 +96,6 @@ void HardFault_Handler(void)
   {
   }
 }
-#endif 
 
 /**
   * @brief  This function handles Memory Manage exception.
@@ -186,3 +203,43 @@ void SysTick_Handler(void)
   * @}
   */
 
+/************ Inventek WiFi Interrupts ****************/
+
+// Defined in net_conf_es_wifi_spi.c
+extern SPI_HandleTypeDef hspi;
+
+void SPI3_IRQHandler(void)
+{
+  // UW_TODO: Kernel aware interrupt: wrap in header/trailer 
+  //UW_SOLUTION:
+
+  HAL_SPI_IRQHandler(&hspi);
+
+  // Check if SPI has received data (RXNE flag set)
+  if (__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_RXNE))  
+  {
+      SEM_SIGNAL(spi_rx_sem);  // Signal RX semaphore
+  }
+
+  // // Check if SPI has completed transmission (TXE flag set)
+  if (__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_TXE))  
+  {
+    SEM_SIGNAL(spi_tx_sem); // Signal TX semaphore
+  }
+
+
+}
+
+void EXTI1_IRQHandler(void)
+{
+  // UW_TODO: Kernel aware interrupt: wrap in header/trailer 
+  //UW_SOLUTION
+
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
+
+  // // Check if SPI peripheral signals "Data Ready"
+  if (__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_OVR))  // Example: Overrun means new data available
+  {
+    SEM_SIGNAL(cmddata_rdy_rising_sem); // Signal Data Ready semaphore
+  }
+}

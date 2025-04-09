@@ -10,6 +10,9 @@ set(SOURCES
     sysmem.c                # required by libc / malloc
     log.c
    
+     # IoT:
+     wifi/net_conf_es_wifi_spi.c
+
     # RTOS:
     test/test_rtos.cpp
 
@@ -26,6 +29,7 @@ set(SOURCES
     test/test_all.cpp
     test/tasks/task_audiocard.cpp
     test/tasks/task_gui.cpp
+    test/tasks/task_iot.c
 )
 
 set(LINKER_LD_FILE ./STM32L475VGTx_FLASH.ld)
@@ -43,16 +47,21 @@ target_link_libraries(${TARGET}
     drivers
     -Wl,--no-whole-archive
     ucos2
+    mqtt-packet
     adafruit_ili9341
     adafruit_ft6206
     arduinosd
     adafruit_vs1053
+    cmsis_os_ucos2
+ 
+    es_wifi
 )
 
 target_include_directories(${TARGET} 
     PUBLIC 
         .
         ./test
+        ./ei_sensors
 )
 
 # Convert errors to warnings:

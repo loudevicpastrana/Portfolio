@@ -38,22 +38,30 @@ Adafruit_FT6206 touchCtrl = Adafruit_FT6206(); // The Touchscreen controller
 Adafruit_GFX_Button myButton_play;
 Adafruit_GFX_Button myButton_stop;
 Adafruit_GFX_Button myButton_next;
+Adafruit_GFX_Button myButton_prev;
 
 // Define constants for button position and size
-#define BUTTON_X 50
+#define BUTTON_X 30
 #define BUTTON_Y 280
 #define BUTTON_WIDTH 50
 #define BUTTON_HEIGHT 50
 
-#define BUTTON_STOP_X 120
+#define BUTTON_STOP_X 90
 #define BUTTON_STOP_Y 280
 #define BUTTON_STOP_WIDTH 50
 #define BUTTON_STOP_HEIGHT 50
 
-#define BUTTON_NEXT_X 200
+#define BUTTON_PREV_X 150
+#define BUTTON_PREV_Y 280
+#define BUTTON_PREV_WIDTH 50
+#define BUTTON_PREV_HEIGHT 50
+
+#define BUTTON_NEXT_X 210
 #define BUTTON_NEXT_Y 280
 #define BUTTON_NEXT_WIDTH 50
 #define BUTTON_NEXT_HEIGHT 50
+
+static Mp3Command_t cmd;
 
 /************************************************************************************
 
@@ -81,6 +89,10 @@ myButton_stop.drawButton();
 myButton_next.initButton(&lcdCtrl, BUTTON_NEXT_X, BUTTON_NEXT_Y, BUTTON_WIDTH, BUTTON_HEIGHT, 
   ILI9341_WHITE, ILI9341_GREEN, ILI9341_WHITE, "Next", 2);
 myButton_next.drawButton();
+
+myButton_prev.initButton(&lcdCtrl, BUTTON_PREV_X, BUTTON_PREV_Y, BUTTON_WIDTH, BUTTON_HEIGHT, 
+  ILI9341_WHITE, ILI9341_DARKGREY, ILI9341_WHITE, "Prev", 2);
+myButton_prev.drawButton();
 }
 
  static void drawGui()
@@ -92,6 +104,31 @@ myButton_next.drawButton();
    lcdCtrl.setTextSize(2);
    char printBuffer[128];
    lcdCtrl.print(printBuffer, sizeof(printBuffer), "PLAYING:");
+   if(cmd==MP3_CMD_NEXT)
+    lcdCtrl.print(printBuffer, sizeof(printBuffer), mp3Files[currentSongIndex+1]);
+   else if(cmd==MP3_CMD_PREV)
+    lcdCtrl.print(printBuffer, sizeof(printBuffer), mp3Files[currentSongIndex-1]);
+   else if(cmd==MP3_CMD_PLAY)
+    lcdCtrl.print(printBuffer, sizeof(printBuffer), mp3Files[currentSongIndex]);
+   else
+   lcdCtrl.print(printBuffer, sizeof(printBuffer), " ");
+
+   lcdCtrl.setCursor(100, ILI9341_TFTHEIGHT / 2 - 70);
+
+   drawButton(); 
+
+}
+//draws GUI from IoT command
+static void drawGuiIot()
+ {
+   lcdCtrl.fillScreen(lcdCtrl.color565(50/3, 0, 111/3));
+
+   lcdCtrl.setCursor(0, ILI9341_TFTHEIGHT / 2 - 100);
+   lcdCtrl.setTextColor(ILI9341_WHITE);
+   lcdCtrl.setTextSize(2);
+   char printBuffer[128];
+   lcdCtrl.print(printBuffer, sizeof(printBuffer), "PLAYING:");
+   
    lcdCtrl.print(printBuffer, sizeof(printBuffer), mp3Files[currentSongIndex]);
    lcdCtrl.setCursor(100, ILI9341_TFTHEIGHT / 2 - 70);
 
@@ -104,8 +141,7 @@ myButton_next.drawButton();
 
 // Define a function to handle touch events
 static void handleTouchEvent() {
-
-  static Mp3Command_t cmd;
+ 
   //OS_ERR err;
 
   if (!touchCtrl.touched()) return;
@@ -144,7 +180,7 @@ static void handleTouchEvent() {
     drawGui();
   }
 
-  // Stop Button
+  // Next Button
   if (myButton_next.contains(p.x, p.y)) {
     myButton_next.press(true);
     myButton_next.drawButton(true);
@@ -157,6 +193,18 @@ static void handleTouchEvent() {
     drawGui();
   }
 
+    // Prev Button
+    if (myButton_prev.contains(p.x, p.y)) {
+      myButton_prev.press(true);
+      myButton_prev.drawButton(true);
+      OSTimeDly(50);
+      cmd = MP3_CMD_PREV;
+      OSQPost(mp3CmdQueue, (void *)&cmd);
+      myButton_prev.press(false);
+      myButton_prev.drawButton(false);
+      
+      drawGui();
+    }
 
  
 }
@@ -164,6 +212,8 @@ static void handleTouchEvent() {
 
 // Define the GuiTask function
 void GuiTask(void* pdata) {
+  INT8U err;
+  
   log_debug("GuiTask: starting\n");
 
   initControllers();
@@ -172,6 +222,15 @@ void GuiTask(void* pdata) {
   
   while (1) {
       handleTouchEvent();
+      
+      flags_iot = OSFlagAccept(dataFlag, FLAG_NEW_DATA, OS_FLAG_WAIT_SET_ALL, &err);
+
+      if (flags_iot & FLAG_NEW_DATA)
+      {
+        // Clear the flag after checking
+        OSFlagPost(dataFlag, FLAG_NEW_DATA, OS_FLAG_CLR, &err);
+        drawGuiIot();
+      }
       OSTimeDly(50);
   }
 }
