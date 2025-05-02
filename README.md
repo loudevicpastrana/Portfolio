@@ -41,6 +41,9 @@ Passionate about optimizing power efficiency and developing robust firmware for 
 - Used I2C to communicate to the temperature sensor.
 - Sending temperature sensor reading through bluetooth.
 
+### **LeetCodee Problems**
+ - Solved some leetcode problems
+
 ### **Senior Firmware Engineer - XP Power LLC** *(2020 - 2024)*
 - Led firmware development for **power supply controllers** in medical equipment.
 - Reduced power consumption by **20%** using **efficient sleep modes**.
